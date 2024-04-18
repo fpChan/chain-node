@@ -1,0 +1,3 @@
+[submodule "base-node"]
+	path = base-node
+	url = https://github.com/fpChan/base-node.git
