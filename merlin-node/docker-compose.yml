@@ -1,0 +1,118 @@
+version: "3.5"
+networks:
+  default:
+    name: merlin-rpc-network
+
+services:
+  cdk-validium-state-db:
+    container_name: merlin-state-db
+    restart: unless-stopped
+    image: postgres:15
+    cpu_shares: 4096
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=state_user
+      - POSTGRES_PASSWORD=state_password
+      - POSTGRES_DB=state_db
+    volumes:
+      - ./init_prover_db.sql:/docker-entrypoint-initdb.d/init.sql
+      - /data/merlin/data/statedb:/var/lib/postgresql/data
+    command:
+      - "postgres"
+      - "-N"
+      - "500"
+      - "-c"
+      - "max_connections=20000"
+      - "-c"
+      - "shared_buffers=16GB"
+      - "-c"
+      - "work_mem=32MB"
+      - "-c"
+      - "wal_buffers=8MB"
+      - "-c"
+      - "effective_cache_size=16GB"
+      - "-c"
+      - "maintenance_work_mem=128MB"
+      - "-c"
+      - "checkpoint_completion_target=0.7"
+      - "-c"
+      - "max_wal_size=4GB"
+      - "-c"
+      - "min_wal_size=200MB"
+      - "-c"
+      - "max_worker_processes=16"
+
+  cdk-validium-pool-db:
+    container_name: merlin-pool-db
+    restart: unless-stopped
+    image: postgres:15
+    cpu_shares: 4096
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=pool_user
+      - POSTGRES_PASSWORD=pool_password
+      - POSTGRES_DB=pool_db
+    volumes:
+      - /data/merlin/data/pooldb:/var/lib/postgresql/data
+    command:
+      - "postgres"
+      - "-N"
+      - "500"
+      - "-c"
+      - "max_connections=10000"
+
+  cdk-validium-prover:
+    container_name: merlin-prover
+    image: merlinadmin/zkprover:v1.0.0
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: '500m'
+        max-file: '3'
+    ports:
+      - 50061:50061 # MT
+      - 50071:50071 # Executor
+    volumes:
+      - ./prover.config.json:/usr/src/app/config.json
+    command: >
+      zkProver -c /usr/src/app/config.json
+
+  cdk-validium-sync:
+    container_name: merlin-sync
+    image: merlinadmin/zkevm-node:v1.2.3
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: '500m'
+        max-file: '3'
+    ports:
+      - 9091:9091
+    volumes:
+      - ./node.config.toml:/app/config.toml
+      - ./genesis.json:/app/genesis.json
+    command:
+      - "/bin/sh"
+      - "-c"
+      - "/app/cdk-validium-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components synchronizer"
+
+  cdk-validium-json-rpc:
+    container_name: merlin-rpc
+    image: merlinadmin/zkevm-node:v1.2.3
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: '500m'
+        max-file: '5'
+    ports:
+      - 8123:8123
+      #- 8133:8133 # needed if WebSockets enabled
+      #- 9092:9091 # needed if metrics enabled
+    volumes:
+      - ./node.config.toml:/app/config.toml
+      - ./genesis.json:/app/genesis.json
+    command:
+      - "/bin/sh"
+      - "-c"
+      - "/app/cdk-validium-node run --network custom --custom-network-file /app/genesis.json --cfg /app/config.toml --components rpc --http.api eth,net,debug,zkevm,txpool,web3" #with debug mode. delete "--http.api eth,net,debug,zkevm,txpool,web3" will remove debug endpoint.
