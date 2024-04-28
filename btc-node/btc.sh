@@ -7,9 +7,9 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 # Define Bitcoin Core version
-BITCOIN_VERSION="26.1"
+BITCOIN_VERSION="27.0"
 BITCOIN_DIST="bitcoin-${BITCOIN_VERSION}-x86_64-linux-gnu.tar.gz"
-#https://bitcoincore.org/bin/bitcoin-core-26.1/bitcoin-26.1-x86_64-linux-gnu.tar.gz
+#https://bitcoincore.org/bin/bitcoin-core-27.0/bitcoin-27.0-x86_64-linux-gnu.tar.gz
 
 # Prompt user for RPC credentials
 read -p "Enter your RPC username: " rpcuser
