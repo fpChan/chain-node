@@ -45,21 +45,22 @@ services:
         "--http.port=8545",
         "--http.corsdomain=*",
         "--http.vhosts=*",
-        "--http.api=web3,debug,eth,txpool,net,engine"
-        "--authrpc.addr=0.0.0.0"
-        "--authrpc.vhosts=*"
+        "--http.api=web3,debug,eth,txpool,net,engine",
+        "--authrpc.addr=0.0.0.0",
+        "--authrpc.vhosts=*",
         "--authrpc.port=8551",
         "--authrpc.jwtsecret=/data/prysm/jwt.hex",
-        "--ws"
+        "--ws",
         "--ws.addr=0.0.0.0",
         "--ws.port=8546",
         "--ws.origins=*",
         "--cache=4096",
-        "--ws.api=debug,eth,txpool,net,engine",
+        "--ws.api=web3,debug,eth,txpool,net,engine",
         "--maxpeers=300",
         "--port=30303"
       ]
 #    command: --cache 4096 --http --http.api web3,eth,net,personal,txpool,engine,admin --http.addr 0.0.0.0 --http.port 8545  --datadir /data/ethdata   --allow-insecure-unlock --rpc.allow-unprotected-txs  --authrpc.addr 0.0.0.0 --authrpc.port 8551 --authrpc.vhosts localhost --maxpeers=300 --authrpc.jwtsecret /data/prysm/jwt.hex
+
 networks:
   eth_network:
     driver: bridge
