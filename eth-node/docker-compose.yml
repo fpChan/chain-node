@@ -10,11 +10,17 @@ services:
       - ./prysm:/data/prysm
       - ./beacondata:/data/beacondata
     ports:
-      - 22315:4000
-      - 22316:13000
-      - 22317:12000/udp
+      - 22317:3500
+      - 22318:8080
+      - 22319:4000
+      - 22320:13000
+      - 22321:33511
+      - 22322:35475/udp
+      - 22323:12000/udp
+    depends_on:
+      - eth
     networks:
-      - eth_network
+      - eth_shared_network
     command: >
       sh -c "/usr/local/bin/beacon-start.sh"
 
@@ -30,9 +36,12 @@ services:
       - 22311:8545
       - 22312:8546
       - 22313:30303
+      - 22313:30303/udp
       - 22314:8551
+      - 22315:43733
+      - 22316:38307/udp
     networks:
-      - eth_network
+      - eth_shared_network
     command:
       [
         "--mainnet",
@@ -54,7 +63,7 @@ services:
         "--ws.addr=0.0.0.0",
         "--ws.port=8546",
         "--ws.origins=*",
-        "--cache=4096",
+        "--cache=10192",
         "--ws.api=web3,debug,eth,txpool,net,engine",
         "--maxpeers=300",
         "--port=30303"
@@ -62,5 +71,5 @@ services:
 #    command: --cache 4096 --http --http.api web3,eth,net,personal,txpool,engine,admin --http.addr 0.0.0.0 --http.port 8545  --datadir /data/ethdata   --allow-insecure-unlock --rpc.allow-unprotected-txs  --authrpc.addr 0.0.0.0 --authrpc.port 8551 --authrpc.vhosts localhost --maxpeers=300 --authrpc.jwtsecret /data/prysm/jwt.hex
 
 networks:
-  eth_network:
-    driver: bridge
+  eth_shared_network:
+    external: true

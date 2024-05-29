@@ -11,9 +11,9 @@ RUN mkdir -p /data/ethdata
 WORKDIR /data/ethdata
 
 # 下载 eth 二进制文件并将其解压到 /usr/local/bin/geth
-RUN curl -Lo /tmp/geth.tar.gz https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.14.0-87246f3c.tar.gz && \
+RUN curl -Lo /tmp/geth.tar.gz https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.14.3-ab48ba42.tar.gz && \
     tar -xzf /tmp/geth.tar.gz -C /tmp/ && \
-    mv /tmp/geth-linux-amd64-1.14.0-87246f3c/geth /usr/local/bin/ && \
+    mv /tmp/geth-linux-amd64-1.14.3-ab48ba42/geth /usr/local/bin/ && \
     chmod +x /usr/local/bin/geth && \
     rm /tmp/geth.tar.gz
 
