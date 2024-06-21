@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  prysm-beacon-chain:
+    build:
+      context: ./btc
+      dockerfile: Dockerfile
+    container_name: btc-test-node
+    networks:
+      - btc_test_shared_network
+    volumes:
+      - /data/btc-test-node/test-chain-data:/data/bitcoin/bitcoin-data
+    ports:
+      - 22310:18332
+
+networks:
+  btc_test_shared_network:
+    external: true
